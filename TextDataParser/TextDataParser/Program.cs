@@ -2,6 +2,8 @@
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using static TextDataParser.TextFileParser;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
+using System.IO;
 
 namespace TextDataParser
 {
@@ -9,8 +11,11 @@ namespace TextDataParser
     {
         static async Task Main(string[] args)
         {
-            string filePath = "C:\\Users\\הלפרין\\source\\repos\\Elta_test\\TextDataParser\\TextDataParser\\Data.txt";
-
+            string pathToAppSettings = "appsettings.json";
+            string jsonString = File.ReadAllText(pathToAppSettings);
+            JObject jsonObject = JObject.Parse(jsonString);
+            string filePath = (string)jsonObject["FilePath"];
+            
             var services = new ServiceCollection();
             services.AddSingleton<IParsedData, ParsedData>();
             var serviceProvider = services.BuildServiceProvider();
@@ -24,7 +29,6 @@ namespace TextDataParser
             };
 
             await parser.Run();
-            Console.WriteLine("Parsing completed successfully.");
         }
     }
 }
