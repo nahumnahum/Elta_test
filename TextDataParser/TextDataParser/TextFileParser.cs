@@ -101,9 +101,9 @@ namespace TextDataParser
             Console.WriteLine("Error: " + message);
         }
 
-        protected virtual void OnParsingCompleted(ParsedDataEventArgs e)
+        protected virtual void OnParsingCompleted(ParsedDataEventArgs parsedDataEvent)
         {
-            ParsingCompleted?.Invoke(this, e);
+            ParsingCompleted?.Invoke(this, parsedDataEvent);
         }
     }
 }
