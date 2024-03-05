@@ -31,42 +31,79 @@ namespace TextDataParser
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred while parsing the file: {ex.Message}");
+                LogError("An error occurred while parsing the file: " + ex.Message);
             }
         }
 
         private async Task<string[]> ReadFileAsync(string filePath)
         {
-            return await File.ReadAllLinesAsync(filePath);
+            try
+            {
+                return await File.ReadAllLinesAsync(filePath);
+            }
+            catch (Exception ex)
+            {
+                LogError("An error occurred while reading the file: " + ex.Message);
+                return null;
+            }
         }
 
         private async Task ParseDataAsync(string[] lines)
         {
-            foreach (var line in lines)
+            if (lines.Length == 0)
             {
-                string[] data = line.Split(',');
-                int id = int.Parse(data[0]);
-                double locationLat = double.Parse(data[1]);
-                double locationLon = double.Parse(data[2]);
-                double speed = double.Parse(data[3]);
-                Track track = new Track(id, locationLat, locationLon, speed);
-                ParsedData.AddTrack(track);
+                Console.WriteLine("The file is empty.");
+                return;
             }
+
+            for(int i = 0; i < lines.Length; ++i)
+            {
+                int lineNum = i + 1;
+                try
+                {
+                    if (string.IsNullOrWhiteSpace(lines[i]))
+                    {
+                        Console.WriteLine("Line " + lineNum + ": empty line encountered. Skipping...");
+                        continue;
+                    }
+
+                    string[] data = lines[i].Split(',');
+
+                    int id;
+                    double locationLat, locationLon, speed;
+
+                    if (!int.TryParse(data[0], out id))
+                    {
+                        
+                        LogError("Failed to parse ID from line: " + lineNum);
+                        continue;
+                    }
+                    if (!double.TryParse(data[1], out locationLat) ||
+                        !double.TryParse(data[2], out locationLon) ||
+                        !double.TryParse(data[3], out speed))
+                    {
+                        LogError("Failed to parse location or speed from line: " + lineNum);
+                        continue;
+                    }
+
+                    Track track = new Track(id, locationLat, locationLon, speed);
+                    ParsedData.AddTrack(track);
+                }
+                catch (Exception ex)
+                {
+                    LogError("An error occurred while parsing line: " + lineNum + ". " + ex.Message);
+                }
+            }
+        }
+
+        private void LogError(string message)
+        {
+            Console.WriteLine("Error: " + message);
         }
 
         protected virtual void OnParsingCompleted(ParsedDataEventArgs e)
         {
             ParsingCompleted?.Invoke(this, e);
-        }
-
-        public class ParsedDataEventArgs : EventArgs
-        {
-            public IParsedData ParsedData { get; }
-
-            public ParsedDataEventArgs(IParsedData parsedData)
-            {
-                ParsedData = parsedData;
-            }
         }
     }
 }
