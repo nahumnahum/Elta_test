@@ -1,0 +1,13 @@
+﻿{
+	"FirstName": "Nahum",
+	"LastName": "Halperin",
+	"Age": 33,
+	"Active": true,
+	"Languages": [
+		"Java",
+		"Python",
+		"C",
+		"C++",
+		"C#"
+	]
+}

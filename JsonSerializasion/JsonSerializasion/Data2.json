@@ -1,0 +1,11 @@
+{
+  "FirstName": "Yakov",
+  "LastName": "Levy",
+  "Age": 18,
+  "Active": true,
+  "Languages": [
+    "C",
+    "Go",
+    "Ruby"
+  ]
+}
